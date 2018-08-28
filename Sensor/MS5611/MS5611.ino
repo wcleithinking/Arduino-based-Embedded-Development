@@ -1,6 +1,6 @@
 #include <Wire.h>
 #include "MS5611.h"
-MS5611 my_ms5611(0);
+MS5611 my_ms5611;
 
 // Variables of MS5611
 uint16_t C[8];

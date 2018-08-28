@@ -6,23 +6,23 @@ MPU6050 my_mpu6050;
 #define RadToDeg  (180/PI)
 
 // for sensor
-double accel_x = 0, accel_y = 0, accel_z = 0;
-double temp = 0;
-double gyro_x = 0, gyro_y = 0, gyro_z = 0;
-double gyro_x_bias = 0, gyro_y_bias = 0, gyro_z_bias = 0;
+float accel_x = 0, accel_y = 0, accel_z = 0;
+float temp = 0;
+float gyro_x = 0, gyro_y = 0, gyro_z = 0;
+float gyro_x_bias = 0, gyro_y_bias = 0, gyro_z_bias = 0;
 
 // for attitude
-double roll_accel = 0, pitch_accel = 0;
-double hatroll = 0, hatpitch = 0;
-double roll = 0, pitch = 0;
+float roll_accel = 0, pitch_accel = 0;
+float hatroll = 0, hatpitch = 0;
+float roll = 0, pitch = 0;
 
 // for loop
-double dt = 0.01;
+float dt = 0.01;
 int time_diff;
 unsigned long time_old, time_new;
 
 // for debug
-double debug_value;
+float debug_value;
 
 void setup() {
   Wire.begin();
@@ -41,7 +41,7 @@ void loop() {
     my_mpu6050.gyro_sample(&gyro_x, &gyro_y, &gyro_z);
     complementary_filter_rollpitch();
   }
-  Serial.println(hatpitch*RadToDeg);
+  Serial.println(hatpitch * RadToDeg);
 }
 
 void complementary_filter_rollpitch() {

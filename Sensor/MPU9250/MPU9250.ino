@@ -8,7 +8,7 @@ float Angle_estimate[3]     = {0, 0, 0};
 float dt = 0.01;
 unsigned long time_old, time_new, time_diff;
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   myIMU.init(3, 4, 3, 4, 1, dt);
 }
 
@@ -20,5 +20,5 @@ void loop() {
     myIMU.sample();
     myIMU.attitude_filter(Angle_estimate, Gyro_bias_estimate);
   }
-  Serial.println(Angle_estimate[2] * 180 / PI);
+  Serial.println(Angle_estimate[0] * 180 / PI);
 }
