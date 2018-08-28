@@ -35,7 +35,7 @@ void setup()
 {
   Wire.begin();
   //my_mpu6050.acceltempgyro_config(3, 3, 4);
-  Serial.begin(115200);
+  Serial.begin(9600);
   while (!Serial);             // Leonardo: wait for serial monitor
   Serial.println("\nI2C Scanner");
 }

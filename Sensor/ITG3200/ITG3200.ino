@@ -4,8 +4,8 @@
 ITG3200 my_itg3200;
 
 // The variables hold the x,y and z axes angular velocites.
-double temp;
-double gyro_x, gyro_y, gyro_z;
+float temp;
+float gyro_x, gyro_y, gyro_z;
 
 void setup() {
   Wire.begin();

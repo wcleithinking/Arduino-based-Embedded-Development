@@ -4,7 +4,7 @@
 ADXL345 my_adxl345;
 
 // The variables hold the x,y and z axes acceleration.
-double accel_x, accel_y, accel_z;
+float accel_x, accel_y, accel_z;
 
 void setup() {
   Wire.begin();
