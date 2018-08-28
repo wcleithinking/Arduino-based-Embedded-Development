@@ -5,12 +5,6 @@
    Test the library: STR.h
 */
 /****************************************************************************/
-#include "Config.h"
-#include <Servo.h>
-#include "IMU.h"
-#include "STR.h"
-#include <SdFat.h>
-/****************************************************************************/
 /*
                     (CW)          |                 (CW)      (CCW)
    QuadP :           0            |   QuadX :         0         1
@@ -19,40 +13,36 @@
                     (CW)          |                 (CCW)      (CW)
 */
 /****************************************************************************/
+#include "Config.h"
+#include <Servo.h>
+#include <IMU.h>
+#include <STR.h>
+#include <SdFat.h>
 Servo     motor[4];
 IMU       myIMU;
 STR       mySTR;
 /****************************************************************************/
-// States of Vehicle, from Sensors and Filters
-//float Gyro_measure_old[3]   = {0, 0, 0};
-//float Gyro_measure_new[3]   = {0, 0, 0};
-float Gyro_measure[3]       = {0, 0, 0};
-float Gyro_bias_estimate[3] = {0, 0, 0};
-float Angle_estimate[3]     = {0, 0, 0};
-float Angle_measure[3]      = {0, 0, 0};
-float Angle_bias[3]         = {0, 0, 0};
-float Angle_desire[3]       = {0, 0, 0};
-float Rate_measure[3]       = {0, 0, 0};
-float Rate_bias[3]          = {0, 0, 0};
-float Rate_desire[3]        = {0, 0, 0};
-#ifdef STR_v1
-uint8_t STR_flag = 0;
-float a1, a2, b0, b1;
-#endif
-/****************************************************************************/
+// States
+float Gyro_threemeasure[3]  = {0, 0, 0};
+float Gyro_biasestimate[3]  = {0, 0, 0};
+float Angle_oldestimate[3]  = {0, 0, 0};
+float Angle_newestimate[3]  = {0, 0, 0};
+float Angle_offlinebias[3]  = {0, 0, 0};
+float Angle_eulerdesire[3]  = {0, 0, 0};
+float Rate_threemeasure[3]  = {0, 0, 0};
+float Rate_middledesire[3]  = {0, 0, 0};
 // Motor
 bool ARM_flag = 0;
 uint16_t RC[4] = {PWM_MIN, PWM_MIN, PWM_MIN, PWM_MIN};
 int PWM_ref[4] = {PWM_MIN, PWM_MIN, PWM_MIN, PWM_MIN};
 int PWM_out[4] = {PWM_MIN, PWM_MIN, PWM_MIN, PWM_MIN};
 // Main Loop
-float dt = 0.01;
-int loop_index  = 0;
-// timer0, timer1, timer2, timer3 for loop, roll, pitch, yaw, respectively
-int time_diff[4]   = {0, 0, 0, 0};
+float dt = LOOP_period / 1000;
+uint32_t loop_index  = 0;
+uint32_t time_diff[4] = {0, 0, 0, 0}; // timer0, timer1, timer2, timer3 for loop, roll, pitch, yaw, respectively
 uint8_t time_Index = 0;
-unsigned long time_previous[4], time_current[4];
-unsigned long time_start, time_end;
+volatile unsigned long time_previous[4], time_current[4];
+volatile unsigned long time_start, time_end;
 /****************************************************************************/
 /****************************************************************************/
 void setup() {
@@ -79,34 +69,34 @@ void setup() {
 #endif
   Led_blink(3);
   ARM_flag = 0;
-  Led_armstate();
+  Led_armstate(ARM_flag);
 }
 
 void loop() {
   while (ARM_flag == 0) {
-    Led_armstate();
+    Led_armstate(ARM_flag);
     Receiver_copy();
     if (RC[IndexRoll] <= (PWM_MAX - 10) || RC[IndexPitch] <= (PWM_MAX - 10)) {
       ARM_flag = 0;
-      Led_armstate();
+      Led_armstate(ARM_flag);
     }
     else {
       ARM_flag = 1;
-      Led_armstate();
+      Led_armstate(ARM_flag);
       Controller_cleardata();
       for (int i = 0; i < 4; i++) time_previous[i] = millis();
     }
   }
   time_current[0] = millis();
-  if (time_current[0] - time_previous[0] >= dt * 1000 ) {
+  if (time_current[0] - time_previous[0] >= LOOP_period ) {
 #ifdef DEBUG
     time_diff[0] = time_current[0] - time_previous[0];
 #endif
     time_previous[0] = time_current[0];
     myIMU.sample();
-    myIMU.copygyro(Gyro_measure);
-    myIMU.attitude_filter(Angle_estimate, Gyro_bias_estimate);
-    Angle_calibrate();
+    myIMU.copygyro(Gyro_threemeasure);
+    myIMU.attitude_filter(Angle_oldestimate, Gyro_biasestimate);
+    Sensor_calibrate();
     Receiver_copy();
     Motor_control();
     Motor_update();
@@ -128,3 +118,19 @@ void loop() {
 }
 /****************************************************************************/
 /****************************************************************************/
+void Sensor_calibrate() {
+  if (loop_index < 100) {
+  }
+  else if ((loop_index >= 100) && (loop_index < 300)) {
+    for (int i = 0; i < 3; i++) Angle_offlinebias[i]  += Angle_oldestimate[i];
+  }
+  else {
+    if (loop_index == 300) {
+      for (int i = 0; i < 3; i++) Angle_offlinebias[i] *= 0.005;
+    }
+    for (int i = 0; i < 3; i++) {
+      Angle_newestimate[i]  = Angle_oldestimate[i] - Angle_offlinebias[i];
+      Rate_threemeasure[i]  = Gyro_threemeasure[i] - Gyro_biasestimate[i];
+    }
+  }
+}

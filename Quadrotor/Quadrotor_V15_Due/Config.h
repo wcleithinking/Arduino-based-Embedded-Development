@@ -4,7 +4,7 @@
 //#define Debug_single
 
 // Log
-#define LOG
+//#define LOG
 
 // Frame Type
 #define QuadP

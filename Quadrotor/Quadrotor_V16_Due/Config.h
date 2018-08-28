@@ -15,10 +15,9 @@
 #define IndexYaw              2
 #define IndexAltitude         3
 
-#define FEEDFORWARD
-#define FEEDBACK
-
 // Control Algorithms
+#define FEEDDESIRE
+#define LOOP_period           10
 #define PID_v1
 #define STR_v1
 #define STR_Index             IndexYaw
