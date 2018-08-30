@@ -5,6 +5,7 @@
    Test the library: STR.h
 */
 /****************************************************************************/
+#ifdef LOG
 // SdFat
 #include <BlockDriver.h>
 #include <FreeStack.h>
@@ -13,12 +14,15 @@
 #include <SdFatConfig.h>
 #include <sdios.h>
 #include <SysCall.h>
+#endif
 // Servo
 #include <Servo.h>
 // IMU
 #include <IMU.h>
+#ifdef STR_v1
 // STR
 #include <STR.h>
+#endif
 // Config
 #include "Config.h"
 /****************************************************************************/
@@ -32,7 +36,9 @@
 /****************************************************************************/
 Servo     motor[4];
 IMU       myIMU;
+#ifdef STR_v1
 STR       mySTR;
+#endif
 /****************************************************************************/
 // States of Vehicle, from Sensors and Filters
 //float Gyro_measure_old[3]   = {0, 0, 0};

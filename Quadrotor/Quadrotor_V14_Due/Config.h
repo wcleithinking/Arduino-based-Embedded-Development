@@ -1,10 +1,10 @@
 // Debug
-#define BaudRate  115200
-#define DEBUG
-#define Debug_single
+//#define BaudRate  115200
+//#define DEBUG
+//#define Debug_single
 
 // Log
-#define LOG
+//#define LOG
 
 // Frame Type
 #define QuadP
@@ -20,9 +20,9 @@
 
 // Control Algorithms
 #define PID_v1
-#define STR_v1
-#define STR_Index             IndexYaw
-#define STR_period            40
+// #define STR_v1
+// #define STR_Index             IndexYaw
+// #define STR_period            40
 
 // Constants
 #define Pulse_MIN_Original    1016
